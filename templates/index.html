@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sickle Cell Detection</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    p.subtitle {
+      color: #94a3b8;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .upload-area {
+      border: 2px dashed #334155;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover { border-color: #38bdf8; }
+
+    .upload-area input { display: none; }
+
+    .upload-area label {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .upload-icon { font-size: 3rem; }
+
+    .upload-text { color: #94a3b8; font-size: 0.95rem; }
+
+    #preview {
+      width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    button#predictBtn {
+      width: 100%;
+      padding: 14px;
+      background: #38bdf8;
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button#predictBtn:hover   { background: #0ea5e9; }
+    button#predictBtn:disabled{ background: #334155; color: #64748b; cursor: not-allowed; }
+
+    .result-box {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+    }
+
+    .result-box.positive { background: #450a0a; border: 1px solid #ef4444; }
+    .result-box.negative { background: #052e16; border: 1px solid #22c55e; }
+
+    .result-label {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .positive .result-label { color: #ef4444; }
+    .negative .result-label { color: #22c55e; }
+
+    .result-conf {
+      font-size: 0.95rem;
+      color: #94a3b8;
+    }
+
+    .loader {
+      display: none;
+      text-align: center;
+      margin-top: 16px;
+      color: #38bdf8;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔬 Sickle Cell Detection</h1>
+  <p class="subtitle">Upload a blood smear image to detect sickle cells using AI</p>
+
+  <div class="card">
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept="image/*"/>
+      <label for="fileInput">
+        <span class="upload-icon">🖼️</span>
+        <span class="upload-text">Click to upload a blood smear image<br/><small>JPG, PNG supported</small></span>
+      </label>
+    </div>
+
+    <img id="preview" src="" alt="Preview"/>
+
+    <button id="predictBtn" disabled>Analyse Image</button>
+    <div class="loader" id="loader">⏳ Analysing image...</div>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-label" id="resultLabel"></div>
+      <div class="result-conf"  id="resultConf"></div>
+    </div>
+  </div>
+
+  <script>
+    const fileInput   = document.getElementById('fileInput');
+    const preview     = document.getElementById('preview');
+    const predictBtn  = document.getElementById('predictBtn');
+    const resultBox   = document.getElementById('resultBox');
+    const resultLabel = document.getElementById('resultLabel');
+    const resultConf  = document.getElementById('resultConf');
+    const loader      = document.getElementById('loader');
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      preview.src     = URL.createObjectURL(file);
+      preview.style.display = 'block';
+      predictBtn.disabled   = false;
+      resultBox.style.display = 'none';
+    });
+
+    predictBtn.addEventListener('click', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      predictBtn.disabled     = true;
+      loader.style.display    = 'block';
+      resultBox.style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res  = await fetch('/predict', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      loader.style.display = 'none';
+      predictBtn.disabled  = false;
+
+      resultBox.className         = `result-box ${data.status}`;
+      resultBox.style.display     = 'block';
+      resultLabel.textContent     = data.label;
+      resultConf.textContent      = `Confidence: ${data.confidence}%`;
+    });
+  </script>
+</body>
+</html>

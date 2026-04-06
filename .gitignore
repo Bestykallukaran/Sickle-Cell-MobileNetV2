@@ -1,0 +1,5 @@
+dataset/
+*.h5
+*.zip
+__pycache__/
+uploads/
