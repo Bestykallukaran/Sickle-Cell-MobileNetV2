@@ -3,54 +3,184 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sickle Cell Detection</title>
+  <title>Sickle Cell Detection - AI Buddy</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
       color: #e2e8f0;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ═══════════════════════════════════════ NAVBAR ═══════════════════════════════════════ */
+    .navbar {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 2px solid #38bdf8;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar-menu {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .navbar-menu a, .navbar-menu button {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      background: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .navbar-menu a:hover, .navbar-menu button:hover {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-left: 16px;
+      border-left: 1px solid #334155;
+    }
+
+    .user-email {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover { background: #dc2626; }
+
+    /* ═══════════════════════════════════════ MAIN CONTENT ═══════════════════════════════════════ */
+    .container {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 40px 20px;
     }
 
-    h1 {
-      font-size: 2rem;
-      color: #38bdf8;
-      margin-bottom: 8px;
+    .header {
       text-align: center;
-    }
-
-    p.subtitle {
-      color: #94a3b8;
       margin-bottom: 40px;
-      text-align: center;
     }
 
+    h1 {
+      font-size: 2.5rem;
+      color: #38bdf8;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    /* ═══════════════════════════════════════ TAB NAVIGATION ═══════════════════════════════════════ */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #334155;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: #38bdf8;
+      border-bottom-color: #38bdf8;
+    }
+
+    .tab-btn:hover {
+      color: #38bdf8;
+    }
+
+    /* ═════════════════════════════════════════ CARDS ═════════════════════════════════════════ */
     .card {
-      background: #1e293b;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       border-radius: 16px;
       padding: 32px;
       width: 100%;
-      max-width: 520px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      max-width: 600px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      border: 1px solid #334155;
     }
 
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ═════════════════════════════════════════ UPLOAD AREA ═════════════════════════════════════════ */
     .upload-area {
-      border: 2px dashed #334155;
+      border: 2px dashed #38bdf8;
       border-radius: 12px;
       padding: 40px 20px;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.3s;
+      transition: all 0.3s;
       margin-bottom: 20px;
+      background: rgba(56, 189, 248, 0.05);
     }
 
-    .upload-area:hover { border-color: #38bdf8; }
+    .upload-area:hover {
+      border-color: #0ea5e9;
+      background: rgba(56, 189, 248, 0.1);
+    }
 
     .upload-area input { display: none; }
 
@@ -64,100 +194,514 @@
 
     .upload-icon { font-size: 3rem; }
 
-    .upload-text { color: #94a3b8; font-size: 0.95rem; }
+    .upload-text {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .upload-text small {
+      display: block;
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
 
     #preview {
       width: 100%;
-      max-height: 250px;
+      max-height: 300px;
       object-fit: contain;
       border-radius: 10px;
       margin-bottom: 20px;
       display: none;
+      border: 1px solid #334155;
     }
 
-    button#predictBtn {
+    .options-group {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: rgba(56, 189, 248, 0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .option-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    select, input[type="text"], input[type="email"], input[type="number"], textarea {
       width: 100%;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      transition: border 0.3s;
+      margin-bottom: 12px;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    }
+
+    select option {
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+
+    /* ═════════════════════════════════════════ BUTTONS ═════════════════════════════════════════ */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    button.primary, button.secondary {
+      flex: 1;
       padding: 14px;
-      background: #38bdf8;
-      color: #0f172a;
       font-size: 1rem;
       font-weight: 700;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
-    button#predictBtn:hover   { background: #0ea5e9; }
-    button#predictBtn:disabled{ background: #334155; color: #64748b; cursor: not-allowed; }
+    button.primary {
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+      color: #0f172a;
+    }
 
+    button.primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+    }
+
+    button.primary:disabled {
+      background: #334155;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.3);
+    }
+
+    /* ═════════════════════════════════════════ RESULT BOX ═════════════════════════════════════════ */
     .result-box {
       margin-top: 24px;
-      padding: 20px;
+      padding: 24px;
       border-radius: 12px;
       text-align: center;
       display: none;
+      border-left: 4px solid;
+      animation: slideIn 0.3s ease-out;
     }
 
-    .result-box.positive { background: #450a0a; border: 1px solid #ef4444; }
-    .result-box.negative { background: #052e16; border: 1px solid #22c55e; }
+    @keyframes slideIn {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .result-box.positive {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+      border-left: 4px solid #ef4444;
+    }
+
+    .result-box.negative {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: #22c55e;
+      border-left: 4px solid #22c55e;
+    }
 
     .result-label {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
-    .positive .result-label { color: #ef4444; }
-    .negative .result-label { color: #22c55e; }
+    .result-box.positive .result-label { color: #ef4444; }
+    .result-box.negative .result-label { color: #22c55e; }
+
+    .result-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .result-item {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .result-item-label {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .result-item-value {
+      color: #38bdf8;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
 
     .result-conf {
-      font-size: 0.95rem;
       color: #94a3b8;
+      margin-top: 12px;
+      font-size: 0.95rem;
     }
 
+    /* ═════════════════════════════════════════ LOADER ═════════════════════════════════════════ */
     .loader {
       display: none;
       text-align: center;
       margin-top: 16px;
       color: #38bdf8;
       font-size: 0.9rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(56, 189, 248, 0.3);
+      border-top: 3px solid #38bdf8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ═════════════════════════════════════════ HISTORY ═════════════════════════════════════════ */
+    .history-container {
+      width: 100%;
+    }
+
+    .history-item {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .history-item-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .history-item-info {
+      flex: 1;
+    }
+
+    .history-item-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .history-item-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .history-item-status.positive {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .history-item-status.negative {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .history-item-confidence {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 40px;
+      color: #94a3b8;
+    }
+
+    /* ═════════════════════════════════════════ STATS ═════════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.1) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid #ef4444;
+    }
+
+    .message.success {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border: 1px solid #22c55e;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .navbar-menu {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .user-info {
+        border-left: none;
+        border-top: 1px solid #334155;
+        padding-left: 0;
+        padding-top: 12px;
+        width: 100%;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .history-item {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .history-item-image {
+        width: 150px;
+        height: 150px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>🔬 Sickle Cell Detection</h1>
-  <p class="subtitle">Upload a blood smear image to detect sickle cells using AI</p>
+  <!-- ═══════════════════════════════════════ NAVBAR ═══════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="navbar-brand">🔬 AI Buddy - Sickle Cell</div>
+    <div class="navbar-menu">
+      <a href="#" onclick="switchTab('detector'); return false;">🔍 Detector</a>
+      <a href="#" onclick="switchTab('history'); return false;">📊 History</a>
+      <a href="#" onclick="switchTab('dashboard'); return false;">📈 Dashboard</a>
+    </div>
+    <!-- Login removed -->
+  </nav>
 
-  <div class="card">
-    <div class="upload-area" id="uploadArea">
-      <input type="file" id="fileInput" accept="image/*"/>
-      <label for="fileInput">
-        <span class="upload-icon">🖼️</span>
-        <span class="upload-text">Click to upload a blood smear image<br/><small>JPG, PNG supported</small></span>
-      </label>
+  <!-- ═══════════════════════════════════════ MAIN CONTAINER ═══════════════════════════════════════ -->
+  <div class="container">
+    <div class="header">
+      <h1>🧬 Sickle Cell Detection</h1>
+      <p class="subtitle">AI-powered analysis of blood smear images</p>
     </div>
 
-    <img id="preview" src="" alt="Preview"/>
+    <!-- ═════════════════════════════════════════ DETECTOR TAB ═════════════════════════════════════════ -->
+    <div id="detector" class="tab-content active">
+      <div class="card">
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="fileInput" accept="image/*"/>
+          <label for="fileInput">
+            <span class="upload-icon">🖼️</span>
+            <span class="upload-text">Click to upload a blood smear image<br/><small>JPG, PNG supported</small></span>
+          </label>
+        </div>
 
-    <button id="predictBtn" disabled>Analyse Image</button>
-    <div class="loader" id="loader">⏳ Analysing image...</div>
+        <img id="preview" src="" alt="Preview"/>
 
-    <div class="result-box" id="resultBox">
-      <div class="result-label" id="resultLabel"></div>
-      <div class="result-conf"  id="resultConf"></div>
+        <div class="options-group">
+          <label class="option-label">Patient Information</label>
+          <input type="text" id="patientName" placeholder="Patient Name (Optional)">
+          <input type="email" id="patientEmail" placeholder="Email (Optional)">
+        </div>
+
+        <div class="options-group">
+          <label class="option-label">Analysis Options</label>
+          <label class="option-label">Sample Type</label>
+          <select id="sampleType">
+            <option value="blood">Blood Smear</option>
+            <option value="bone_marrow">Bone Marrow</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label class="option-label">Magnification</label>
+          <select id="magnification">
+            <option value="40x">40x</option>
+            <option value="100x">100x</option>
+            <option value="unknown">Unknown</option>
+          </select>
+
+          <label class="option-label">Notes</label>
+          <textarea id="notes" placeholder="Additional notes about the sample..." rows="3"></textarea>
+        </div>
+
+        <div class="button-group">
+          <button class="primary" id="predictBtn" disabled onclick="predict()">🔬 Analyse Image</button>
+          <button class="secondary" onclick="resetForm()">↻ Reset</button>
+        </div>
+
+        <div class="loader" id="loader">
+          <span class="spinner"></span> Analysing image...
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="result-box" id="resultBox">
+          <div class="result-label" id="resultLabel"></div>
+          <div class="result-details">
+            <div class="result-item">
+              <div class="result-item-label">Status</div>
+              <div class="result-item-value" id="resultStatus"></div>
+            </div>
+            <div class="result-item">
+              <div class="result-item-label">Confidence</div>
+              <div class="result-item-value" id="resultConfidence"></div>
+            </div>
+          </div>
+          <div class="result-conf" id="resultConf"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════ HISTORY TAB ═════════════════════════════════════════ -->
+    <div id="history" class="tab-content">
+      <div class="card history-container">
+        <div id="historyList"></div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════ DASHBOARD TAB ═════════════════════════════════════════ -->
+    <div id="dashboard" class="tab-content">
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalTests">0</div>
+            <div class="stat-label">Total Tests</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="positiveCount">0</div>
+            <div class="stat-label">Positive Cases</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="negativeCount">0</div>
+            <div class="stat-label">Negative Cases</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="accuracyRate">0%</div>
+            <div class="stat-label">Avg. Confidence</div>
+          </div>
+        </div>
+        <button class="secondary" onclick="loadDashboard()" style="width: 100%;">🔄 Refresh Stats</button>
+      </div>
     </div>
   </div>
 
   <script>
+    // ═════════════════════════════════════════ TAB MANAGEMENT ═════════════════════════════════════════
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      
+      if (tabName === 'history') loadHistory();
+      if (tabName === 'dashboard') loadDashboard();
+    }
+
+    function addTabButtons() {
+      const header = document.querySelector('.header');
+      const tabs = document.createElement('div');
+      tabs.className = 'tabs';
+      tabs.innerHTML = `
+        <button class="tab-btn active" onclick="switchTab('detector')">🔍 Detector</button>
+        <button class="tab-btn" onclick="switchTab('history')">📊 History</button>
+        <button class="tab-btn" onclick="switchTab('dashboard')">📈 Dashboard</button>
+      `;
+      header.after(tabs);
+    }
+
+    // ═════════════════════════════════════════ FILE UPLOAD ═════════════════════════════════════════
     const fileInput   = document.getElementById('fileInput');
     const preview     = document.getElementById('preview');
     const predictBtn  = document.getElementById('predictBtn');
     const resultBox   = document.getElementById('resultBox');
     const resultLabel = document.getElementById('resultLabel');
+    const resultStatus = document.getElementById('resultStatus');
+    const resultConfidence = document.getElementById('resultConfidence');
     const resultConf  = document.getElementById('resultConf');
     const loader      = document.getElementById('loader');
+    const message     = document.getElementById('message');
 
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
@@ -168,28 +712,113 @@
       resultBox.style.display = 'none';
     });
 
-    predictBtn.addEventListener('click', async () => {
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = `message ${type}`;
+      message.style.display = 'block';
+      setTimeout(() => message.style.display = 'none', 5000);
+    }
+
+    async function predict() {
       const file = fileInput.files[0];
-      if (!file) return;
+      if (!file) {
+        showMessage('Please select an image first', 'error');
+        return;
+      }
 
       predictBtn.disabled     = true;
-      loader.style.display    = 'block';
+      loader.style.display    = 'flex';
       resultBox.style.display = 'none';
 
       const formData = new FormData();
       formData.append('file', file);
 
-      const res  = await fetch('/predict', { method: 'POST', body: formData });
-      const data = await res.json();
+      try {
+        const res  = await fetch('/predict', { method: 'POST', body: formData });
+        const data = await res.json();
 
-      loader.style.display = 'none';
-      predictBtn.disabled  = false;
+        if (!res.ok) {
+          showMessage(data.error || 'Analysis failed', 'error');
+          return;
+        }
 
-      resultBox.className         = `result-box ${data.status}`;
-      resultBox.style.display     = 'block';
-      resultLabel.textContent     = data.label;
-      resultConf.textContent      = `Confidence: ${data.confidence}%`;
-    });
+        loader.style.display = 'none';
+        predictBtn.disabled  = false;
+
+        resultBox.className         = `result-box ${data.status}`;
+        resultBox.style.display     = 'block';
+        resultLabel.textContent     = data.label;
+        resultStatus.textContent    = data.status.toUpperCase();
+        resultConfidence.textContent = data.confidence + '%';
+        resultConf.textContent      = `Analysis complete with ${data.confidence}% confidence`;
+
+        showMessage('Analysis completed successfully!', 'success');
+      } catch (e) {
+        showMessage('Error during analysis: ' + e.message, 'error');
+        loader.style.display = 'none';
+        predictBtn.disabled  = false;
+      }
+    }
+
+    function resetForm() {
+      fileInput.value = '';
+      preview.style.display = 'none';
+      resultBox.style.display = 'none';
+      predictBtn.disabled = true;
+      document.getElementById('patientName').value = '';
+      document.getElementById('patientEmail').value = '';
+      document.getElementById('notes').value = '';
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch('/history');
+        const data = await res.json();
+        const historyList = document.getElementById('historyList');
+
+        if (data.predictions.length === 0) {
+          historyList.innerHTML = '<div class="history-empty">📭 No analysis history yet</div>';
+          return;
+        }
+
+        historyList.innerHTML = data.predictions.reverse().map(pred => `
+          <div class="history-item">
+            <img src="${pred.image_url}" class="history-item-image" alt="Analyzed sample">
+            <div class="history-item-info">
+              <div class="history-item-label">${pred.label}</div>
+              <span class="history-item-status ${pred.status}">${pred.status.toUpperCase()}</span>
+              <div class="history-item-confidence">Confidence: ${pred.confidence}%</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('historyList').innerHTML = '<div class="history-empty">Error loading history</div>';
+      }
+    }
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch('/history');
+        const data = await res.json();
+        const predictions = data.predictions;
+
+        const totalTests = predictions.length;
+        const positiveCount = predictions.filter(p => p.status === 'positive').length;
+        const negativeCount = predictions.filter(p => p.status === 'negative').length;
+        const avgConfidence = totalTests > 0 ? (predictions.reduce((sum, p) => sum + p.confidence, 0) / totalTests).toFixed(1) : 0;
+
+        document.getElementById('totalTests').textContent = totalTests;
+        document.getElementById('positiveCount').textContent = positiveCount;
+        document.getElementById('negativeCount').textContent = negativeCount;
+        document.getElementById('accuracyRate').textContent = avgConfidence + '%';
+      } catch (e) {
+        showMessage('Error loading dashboard', 'error');
+      }
+    }
+
+
+
+    addTabButtons();
   </script>
 </body>
 </html>
