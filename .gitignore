@@ -1,5 +1,7 @@
-dataset/
-*.h5
-*.zip
-__pycache__/
 uploads/
+__pycache__/
+*.pyc
+*.h5
+*.jpg
+*.png
+processed_dataset/

@@ -2,39 +2,48 @@ import os
 import shutil
 import random
 
-# Original dataset path
-source_dir = "dataset"
+# Paths
+dataset_path = "dataset"              # original dataset folder
+output_path = "processed_dataset"     # new dataset folder
 
-classes = ["Positives", "Negatives"]
 
-# Target folders
-for split in ["train", "val", "test"]:
-    for cls in classes:
-        os.makedirs(f"dataset/{split}/{cls}", exist_ok=True)
+splits = {
+    "train": 80,
+    "val": 40,
+    "test": 10
+}
 
-# Split ratio
-train_ratio = 0.7
-val_ratio = 0.2
 
-for cls in classes:
-    images = os.listdir(f"{source_dir}/{cls}")
-    random.shuffle(images)
+# Create folders
+def create_folders(base_path):
+    for split in ["train", "val", "test"]:
+        for label in ["Positives", "Negatives"]:
+            path = os.path.join(base_path, split, label)
+            os.makedirs(path, exist_ok=True)
 
-    total = len(images)
-    train_end = int(total * train_ratio)
-    val_end = int(total * (train_ratio + val_ratio))
+# Load images
+pos_images = os.listdir(os.path.join(dataset_path, "Positives"))
+neg_images = os.listdir(os.path.join(dataset_path, "Negatives"))
 
-    train_imgs = images[:train_end]
-    val_imgs = images[train_end:val_end]
-    test_imgs = images[val_end:]
+# Shuffle images
+random.shuffle(pos_images)
+random.shuffle(neg_images)
 
-    for img in train_imgs:
-        shutil.copy(f"{source_dir}/{cls}/{img}", f"dataset/train/{cls}/{img}")
+# Split and copy function
+def split_and_copy(images, label):
+    start = 0
+    for split, count in splits.items():
+        selected = images[start:start+count]
+        for img in selected:
+            src = os.path.join(dataset_path, label, img)
+            dst = os.path.join(output_path, split, label, img)
+            shutil.copy(src, dst)
+        start += count
 
-    for img in val_imgs:
-        shutil.copy(f"{source_dir}/{cls}/{img}", f"dataset/val/{cls}/{img}")
+# Run everything
+create_folders(output_path)
 
-    for img in test_imgs:
-        shutil.copy(f"{source_dir}/{cls}/{img}", f"dataset/test/{cls}/{img}")
+split_and_copy(pos_images, "Positives")
+split_and_copy(neg_images, "Negatives")
 
-print("✅ Dataset split completed!")
+print("Dataset successfully split!")
